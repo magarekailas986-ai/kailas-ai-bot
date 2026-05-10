@@ -34,7 +34,7 @@ def reply(update, context):
     except:
         bot_reply = "Error aa gaya 😅"
 
-    update.message.reply_text(bot_reply)
+    update.message.reply_text(Final stable bot fix)
 
 updater = Updater(BOT_TOKEN, use_context=True)
 
