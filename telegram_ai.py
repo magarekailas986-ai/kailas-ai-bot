@@ -1,15 +1,14 @@
 import os
 import requests
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 API_KEY = os.getenv("API_KEY")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hello Kailas 😄 Main AI bot hu!")
+def start(update, context):
+    update.message.reply_text("Hello Kailas 😄 AI Bot online hai!")
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def reply(update, context):
     user_message = update.message.text
 
     headers = {
@@ -30,24 +29,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         json=data
     )
 
-    result = response.json()
-
     try:
-        reply = result["choices"][0]["message"]["content"]
+        bot_reply = response.json()["choices"][0]["message"]["content"]
     except:
-        reply = "Kuch error aa gaya 😅"
+        bot_reply = "Error aa gaya 😅"
 
-    await update.message.reply_text(reply)
+    update.message.reply_text(bot_reply)
 
-def main():
-    app = Application.builder().token(BOT_TOKEN).build()
+updater = Updater(BOT_TOKEN, use_context=True)
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+dp = updater.dispatcher
 
-    print("Bot chal raha hai 😄")
+dp.add_handler(CommandHandler("start", start))
+dp.add_handler(MessageHandler(Filters.text, reply))
 
-    app.run_polling()
+print("Bot chal raha hai 😄")
 
-if __name__ == "__main__":
-    main()
+updater.start_polling()
+updater.idle()
